@@ -1,0 +1,95 @@
+You are a scientist specializing in Fenton-like single-atom catalysis. Your task is to extract the structural and electronic properties of the single-atom catalyst described in the following text. Use the provided examples as a guide for the information to extract and the output format.
+
+If a specific piece of information cannot be determined with certainty from the provided text, represent its value as "unknown" in the JSON output.
+
+Output the result in JSON format.
+
+Examples:
+
+Example 1
+
+Input Text:
+"A Co-N-C catalyst was synthesized for Fenton-like degradation of pollutants. EXAFS analysis showed a Co-N4 coordination environment with an average Co-N bond length of 1.9 Å. The cobalt was found to be in a +2 oxidation state. The material has a Co loading of 1.5 wt% and DFT calculations suggest a trigonal pyramidal geometry for the Co-N4 sites."
+
+Output:
+
+JSON
+
+{
+  "central_metal_atom": "Co",
+  "support_material": "N-C",
+  "coordinating_atoms_types": ["N"],
+  "coordination_numbers_detail": {"N": 4},
+  "total_coordination_number": 4,
+  "oxidation_state": "+2",
+  "metal_loading": "1.5 wt%",
+  "bond_lengths": {"Co-N": "1.9 Å"},
+  "coordination_geometry": "trigonal pyramidal",
+  "other_electronic_properties": "unknown"
+}
+Example 2
+
+Input Text:
+"A highly stable single-atom platinum catalyst supported on cerium oxide (Pt SA/CeO2) demonstrated excellent Fenton-like activity. The platinum loading was 0.25 wt%. X-ray absorption fine structure (XAFS) spectroscopy revealed that each Pt atom is coordinated with four oxygen atoms from the CeO2 support, forming Pt-O4 sites. The average Pt-O bond length was determined to be 2.01 Å. X-ray photoelectron spectroscopy (XPS) indicated that the platinum atoms were predominantly in the +2 oxidation state, and the sites exhibit a square planar geometry."
+
+Output:
+
+JSON
+
+{
+  "central_metal_atom": "Pt",
+  "support_material": "CeO2",
+  "coordinating_atoms_types": ["O"],
+  "coordination_numbers_detail": {"O": 4},
+  "total_coordination_number": 4,
+  "oxidation_state": "+2",
+  "metal_loading": "0.25 wt%",
+  "bond_lengths": {"Pt-O": "2.01 Å"},
+  "coordination_geometry": "square planar",
+  "other_electronic_properties": "unknown"
+}
+Example 3
+
+Input Text:
+"We report a nickel single-atom electrocatalyst (Ni SAC) anchored on nitrogen-doped graphene (N-G), showing promise for electro-Fenton processes. While the precise metal loading could not be definitively quantified in this preliminary study, EXAFS analysis suggested a primary coordination environment of Ni-N3. The average Ni-N bond length was measured at 1.88 Å. DFT calculations, supported by valence band XPS, pointed towards a formal oxidation state of +1 for the nickel single atoms under operating conditions. The d-band center was calculated to be -1.5 eV relative to the Fermi level."
+
+Output:
+
+JSON
+
+{
+  "central_metal_atom": "Ni",
+  "support_material": "N-G",
+  "coordinating_atoms_types": ["N"],
+  "coordination_numbers_detail": {"N": 3},
+  "total_coordination_number": 3,
+  "oxidation_state": "+1",
+  "metal_loading": "unknown",
+  "bond_lengths": {"Ni-N": "1.88 Å"},
+  "coordination_geometry": "unknown",
+  "other_electronic_properties": {"d_band_center": "-1.5 eV relative to the Fermi level"}
+}
+Example 4
+
+Input Text:
+"An Fe-based single-atom catalyst dispersed on sulfur and nitrogen co-doped carbon (Fe SA/SNC) was synthesized for enhanced Fenton-like catalysis. The Fe content was determined to be 0.8 at%. XAS studies indicated that Fe atoms are coordinated by three nitrogen atoms and one sulfur atom, forming an Fe-N3S1 configuration. The Fe-N bond lengths are approximately 2.0 Å, and the Fe-S bond length is 2.2 Å. Mössbauer spectroscopy confirmed Fe(III) as the dominant oxidation state. The catalyst also showed a significant Bader charge of +1.8e on the Fe centers according to theoretical calculations."
+
+Output:
+
+JSON
+
+{
+  "central_metal_atom": "Fe",
+  "support_material": "SNC",
+  "coordinating_atoms_types": ["N", "S"],
+  "coordination_numbers_detail": {"N": 3, "S": 1},
+  "total_coordination_number": 4,
+  "oxidation_state": "+3",
+  "metal_loading": "0.8 at%",
+  "bond_lengths": {
+    "Fe-N": "~2.0 Å",
+    "Fe-S": "2.2 Å"
+  },
+  "coordination_geometry": "Fe-N3S1 configuration",
+  "other_electronic_properties": {"bader_charge": "+1.8e"}
+}
