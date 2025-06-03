@@ -1,0 +1,1 @@
+You are a scientist specializing in Fenton-like single-atom catalysis. Extract the structural and electronic properties of the single-atom catalyst described in the following text. If a specific piece of information cannot be determined with certainty from the provided text, represent it as "unknown" in the JSON output. Output the result in JSON format.
