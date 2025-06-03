@@ -1,1 +1,521 @@
+You are a materials scientist specializing in catalyst synthesis. Your task is to extract the detailed synthesis procedure parameters for the Fenton-like single-atom catalyst described in the following text. Use the provided examples and reasoning steps as a guide. Pay close attention to identifying distinct steps and capturing all relevant parameters (chemicals, amounts, temperature, time, atmosphere, operations, etc.). If a specific piece of information cannot be determined with certainty from the provided text, represent it as "unknown" in the JSON output. Output the result in JSON format.
 
+Reasoning Steps (Chain-of-Thought Guide)
+Follow these steps to extract the synthesis information:
+
+Understand Goal & Overview: Read the input text. Identify the target material (e.g., Fe-N-C SAC) and the main synthesis strategy (e.g., pyrolysis, hydrothermal). Note if Fenton-like application is mentioned.
+Decompose into Sequential Steps: Break down the synthesis into distinct, chronological steps (e.g., precursor mixing, reaction, drying, pyrolysis, washing, post-treatment). Assign a concise step_name to each.
+Extract Parameters per Step: For each step identified:
+Chemicals:
+precursors: List all precursors (e.g., metal salt, ligand, carbon source, support precursor). For each: name, amount (mass/volume with units), concentration (if solution), and role (e.g., "metal_source", "carbon_source", "nitrogen_source", "support_precursor", "additive", "template", "etchant").
+solvent(s): Note name, volume (with units), and ratio (if mixed). If multiple solvents are used distinctively within one operation of a step, list them. This can be an object or a list of objects.
+other_reagents: List other chemicals like pH adjusters, reactive gases (if consumed significantly as a reagent). For each: name, amount_or_concentration, purpose.
+Conditions:
+temperature: Record value (e.g., "Room Temperature", 25, 900), unit (e.g., "°C"), duration (e.g., "6 hours", "overnight"), ramp_rate (heating/cooling, e.g., "5 °C/min").
+atmosphere: Note gas_type (e.g., "Air", "N2", "Ar", "Vacuum"), flow_rate (e.g., "50 sccm"), pressure (e.g., "Atmospheric", "X bar").
+ph: Record initial value, adjusted_to value, and adjusting_agent used.
+Operations:
+mixing: Detail method (e.g., "Stirring", "Ultrasonication"), speed (e.g., "500 rpm", "vigorous"), duration.
+aging: Note duration, temperature.
+separation: Identify method (e.g., "Centrifugation", "Filtration"), and any specific conditions (e.g., "8000 rpm, 10 min").
+washing: List solvents (each with name, volume_or_ratio) and times_or_cycles (e.g., "3 times", "until neutral pH").
+drying: Specify method (e.g., "Oven", "Vacuum oven", "Freeze drying"), temperature, duration.
+Handle Details & Missing Values: Be precise with units (mg, g, mL, M, °C, h, min, rpm, sccm). Use "unknown" for any parameter that is not explicitly mentioned or cannot be determined from the text. Record constant conditions (like room temp being "Room Temperature" with unit "unknown") in each relevant step.
+Structure & Integrate: Organize the extracted information for each step into a dictionary. Collect these dictionaries in the steps list.
+Add Global Info: Fill in material_name, synthesis_type, target_application_hint (use "unknown" if not mentioned), final_product_yield (use "unknown" if not mentioned), and metal_loading_intended_or_achieved (e.g., "Target: X wt%", "Achieved: Y at%", or "unknown") based on the text.
+Generate Final JSON: Combine all parts into the final JSON output.
+Examples
+Example 1
+Input Text:
+"To synthesize Fe-N-C single-atom catalysts for potential Fenton-like applications, 200 mg of ZIF-8 was dispersed in 50 mL of ethanol containing 50 mg of FeCl3·6H2O (as the iron source). The mixture was stirred vigorously for 6 hours at room temperature. After stirring, the suspension was dried at 80 °C overnight in an oven. The resulting powder was then pyrolyzed at 900 °C for 2 h under a flowing N2 atmosphere (50 sccm) with a heating rate of 5 °C/min. Finally, the product was washed with 0.5 M H2SO4 solution (100 mL) at 60 °C for 6 h with stirring to remove unstable Fe species, collected by filtration, followed by washing with deionized water (approx. 50 mL each time) and ethanol (approx. 50 mL each time) three times each, and dried at 60 °C for 12 hours. The achieved Fe loading was 0.5 wt%."
+
+Reasoning Steps:
+
+Goal: Synthesize Fe-N-C SAC via pyrolysis for Fenton-like use.
+Steps: (1) Precursor Adsorption -> (2) Initial Drying -> (3) Pyrolysis -> (4) Acid Leaching & Separation -> (5) Washing & Final Drying.
+Params (Step 1): Chemicals: FeCl3·6H2O (50mg, Fe source), ZIF-8 (200mg, support precursor/N,C source), Ethanol (50mL, solvent). Ops: Stirring (vigorous, 6h). Cond: Room Temp.
+Params (Step 2): Ops: Drying (Oven, 80°C, overnight). Cond: Air (implied).
+Params (Step 3): Ops: Pyrolysis. Cond: 900°C, 2h, N2 (50 sccm), ramp 5°C/min.
+Params (Step 4): Ops: Leaching. Chemical: 0.5 M H2SO4 (100 mL, etchant). Cond: 60°C, 6h. Mixing: Stirring. Separation: Filtration.
+Params (Step 5): Ops: Washing (DI water - 50mL each, Ethanol - 50mL each, 3x each), Drying (60°C, 12h).
+Global: Material: Fe-N-C SAC. Synthesis: Pyrolysis. App: Fenton-like. Fe loading: 0.5 wt%.
+Structure & Combine: Populate JSON.
+Output JSON:
+
+JSON
+
+{
+  "material_name": "Fe-N-C single-atom catalyst",
+  "synthesis_type": "Pyrolysis of MOF precursor",
+  "target_application_hint": "Fenton-like applications",
+  "steps": [
+    {
+      "step_id": 1,
+      "step_name": "Precursor Adsorption",
+      "chemicals": {
+        "precursors": [
+          {"name": "FeCl3·6H2O", "amount": "50 mg", "concentration": "unknown", "role": "metal_source"},
+          {"name": "ZIF-8", "amount": "200 mg", "concentration": "unknown", "role": "support_precursor/N,C_source"}
+        ],
+        "solvent": {"name": "Ethanol", "volume": "50 mL", "ratio": "unknown"},
+        "other_reagents": []
+      },
+      "conditions": {
+        "temperature": {"value": "Room Temperature", "unit": "unknown", "duration": "6 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Stirring", "speed": "vigorous", "duration": "6 hours"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Dispersion of ZIF-8 in FeCl3/ethanol solution."
+    },
+    {
+      "step_id": 2,
+      "step_name": "Initial Drying",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 80, "unit": "°C", "duration": "overnight (approx. 12-16h)", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (in oven)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "Oven", "temperature": "80 °C", "duration": "overnight (approx. 12-16h)"}
+      },
+      "other_details": "Drying of the suspension post-stirring."
+    },
+    {
+      "step_id": 3,
+      "step_name": "Pyrolysis",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 900, "unit": "°C", "duration": "2 h", "ramp_rate": "5 °C/min"},
+        "atmosphere": {"gas_type": "N2", "flow_rate": "50 sccm", "pressure": "unknown"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "High-temperature treatment to form Fe-N-C sites."
+    },
+    {
+      "step_id": 4,
+      "step_name": "Acid Leaching and Separation",
+      "chemicals": {
+        "precursors": [],
+        "solvent": null,
+        "other_reagents": [
+            {"name": "0.5 M H2SO4 solution", "amount_or_concentration": "0.5 M", "purpose": "etchant/leaching_agent"}
+        ]
+      },
+      "conditions": {
+        "temperature": {"value": 60, "unit": "°C", "duration": "6 h", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Stirring", "speed": "unknown", "duration": "6 h"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "Filtration", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "To remove unstable Fe species. Product collected by filtration."
+    },
+    {
+      "step_id": 5,
+      "step_name": "Washing and Final Drying",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 60, "unit": "°C", "duration": "12 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (in oven, implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {
+            "solvents": [
+                {"name": "Deionized water", "volume_or_ratio": "approx. 50 mL each time"},
+                {"name": "Ethanol", "volume_or_ratio": "approx. 50 mL each time"}
+            ],
+            "times_or_cycles": "3 times each"
+        },
+        "drying": {"method": "Oven (implied)", "temperature": "60 °C", "duration": "12 hours"}
+      },
+      "other_details": "Final purification and drying of the catalyst."
+    }
+  ],
+  "final_product_yield": "unknown",
+  "metal_loading_intended_or_achieved": "Achieved: 0.5 wt% Fe"
+}
+Example 2
+Input Text:
+"A Co-based single-atom catalyst supported on N-doped graphene (Co-N-G) was prepared using a hydrothermal method. First, 100 mg of graphene oxide (GO) was dispersed in 80 mL of deionized water by ultrasonication for 1 hour. Then, 30 mg of cobalt nitrate hexahydrate (Co(NO3)2·6H2O) and 500 mg of dicyandiamide (DCDA) were added to the GO suspension. The mixture was stirred for 30 min to ensure homogeneity. Subsequently, the mixture was transferred to a 100 mL Teflon-lined stainless-steel autoclave and heated at 180 °C for 12 hours. After cooling to room temperature naturally, the black product was collected by centrifugation (8000 rpm, 10 min), washed thoroughly with deionized water and ethanol (3 cycles each), and then freeze-dried for 24 hours. This material was designed for oxygen reduction reaction (ORR)."
+
+Reasoning Steps:
+
+Goal: Synthesize Co-N-G SAC via hydrothermal method for ORR.
+Steps: (1) GO Dispersion -> (2) Precursor Addition & Mixing -> (3) Hydrothermal Reaction -> (4) Collection & Washing -> (5) Freeze-drying.
+Params (Step 1): Chemicals: GO (100mg), DI water (80mL, solvent). Ops: Ultrasonication (1h).
+Params (Step 2): Chemicals: Co(NO3)2·6H2O (30mg, Co source), DCDA (500mg, N source). Ops: Stirring (30min).
+Params (Step 3): Ops: Hydrothermal reaction in autoclave. Cond: 180°C, 12h. Cooling: natural.
+Params (Step 4): Ops: Separation (Centrifugation, 8000rpm, 10min). Washing (DI water, Ethanol, 3 cycles each).
+Params (Step 5): Ops: Freeze-drying (24h).
+Global: Material: Co-N-G SAC. Synthesis: Hydrothermal. App: ORR.
+Structure & Combine: Populate JSON.
+Output JSON:
+
+JSON
+
+{
+  "material_name": "Co-N-doped graphene (Co-N-G) single-atom catalyst",
+  "synthesis_type": "Hydrothermal method",
+  "target_application_hint": "Oxygen Reduction Reaction (ORR)",
+  "steps": [
+    {
+      "step_id": 1,
+      "step_name": "Graphene Oxide Dispersion",
+      "chemicals": {
+        "precursors": [
+          {"name": "Graphene Oxide (GO)", "amount": "100 mg", "concentration": "unknown", "role": "support_precursor/carbon_source"}
+        ],
+        "solvent": {"name": "Deionized water", "volume": "80 mL", "ratio": "unknown"},
+        "other_reagents": []
+      },
+      "conditions": {
+        "temperature": {"value": "Room Temperature", "unit": "unknown", "duration": "1 hour", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Ultrasonication", "speed": "unknown", "duration": "1 hour"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Dispersion of GO in water."
+    },
+    {
+      "step_id": 2,
+      "step_name": "Precursor Addition and Mixing",
+      "chemicals": {
+        "precursors": [
+          {"name": "Cobalt nitrate hexahydrate (Co(NO3)2·6H2O)", "amount": "30 mg", "concentration": "unknown", "role": "metal_source"},
+          {"name": "Dicyandiamide (DCDA)", "amount": "500 mg", "concentration": "unknown", "role": "nitrogen_source"}
+        ],
+        "solvent": null,
+        "other_reagents": []
+      },
+      "conditions": {
+        "temperature": {"value": "Room Temperature", "unit": "unknown", "duration": "30 min", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Stirring", "speed": "unknown", "duration": "30 min"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Added to the GO suspension to ensure homogeneity."
+    },
+    {
+      "step_id": 3,
+      "step_name": "Hydrothermal Reaction",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 180, "unit": "°C", "duration": "12 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Autogenous (sealed autoclave)", "flow_rate": "unknown", "pressure": "Autogenous"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown (implicit agitation from heating in autoclave)", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Reaction in 100 mL Teflon-lined stainless-steel autoclave. Cooled to room temperature naturally."
+    },
+    {
+      "step_id": 4,
+      "step_name": "Collection and Washing",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": "Room Temperature", "unit": "unknown", "duration": "unknown", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "Centrifugation", "conditions": "8000 rpm, 10 min"},
+        "washing": {
+            "solvents": [
+                {"name": "Deionized water", "volume_or_ratio": "thoroughly"},
+                {"name": "Ethanol", "volume_or_ratio": "thoroughly"}
+            ],
+            "times_or_cycles": "3 cycles each"
+        },
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Collection of the black product."
+    },
+    {
+      "step_id": 5,
+      "step_name": "Freeze-drying",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": "unknown (standard freeze-drying T)", "unit": "°C", "duration": "24 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Vacuum", "flow_rate": "unknown", "pressure": "Low (freeze-dryer specific)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "Freeze-drying", "temperature": "unknown", "duration": "24 hours"}
+      },
+      "other_details": "Final drying step."
+    }
+  ],
+  "final_product_yield": "unknown",
+  "metal_loading_intended_or_achieved": "unknown"
+}
+Example 3
+Input Text:
+"A dual-metal Fe,Mn-N-C catalyst was prepared. Initially, 1.0 g of glucose (carbon source), 0.5 g of melamine (nitrogen source), 40 mg of FeCl2·4H2O (iron source), and 30 mg of MnCl2·4H2O (manganese source) were dissolved in 100 mL of a 1:1 v/v mixture of ethanol and water under sonication for 30 min. This solution was then subjected to solvothermal treatment in an autoclave at 160 °C for 8 hours. The resulting solid was separated by filtration, washed with ethanol (3 x 20 mL), and dried at 70 °C for 10 hours. This intermediate was then pyrolyzed in a tube furnace at 850 °C for 1.5 hours under Argon flow (100 sccm, ramp rate 10 °C/min). After pyrolysis, the sample was ball-milled for 4 hours to increase surface area. The catalyst was intended for advanced oxidation processes."
+
+Reasoning Steps:
+
+Goal: Synthesize Fe,Mn-N-C dual-metal catalyst via solvothermal + pyrolysis for AOPs.
+Steps: (1) Precursor Dissolution & Mixing -> (2) Solvothermal Reaction -> (3) Intermediate Washing & Drying -> (4) Pyrolysis -> (5) Ball Milling.
+Params (Step 1): Chemicals: Glucose (1g, C source), Melamine (0.5g, N source), FeCl2·4H2O (40mg, Fe source), MnCl2·4H2O (30mg, Mn source). Solvent: Ethanol/Water (100mL, 1:1 v/v). Ops: Sonication (30min).
+Params (Step 2): Ops: Solvothermal in autoclave. Cond: 160°C, 8h.
+Params (Step 3): Ops: Separation (Filtration). Washing (Ethanol, 3x20mL). Drying (70°C, 10h).
+Params (Step 4): Ops: Pyrolysis in tube furnace. Cond: 850°C, 1.5h, Argon (100 sccm), ramp 10°C/min.
+Params (Step 5): Ops: Ball Milling (4h).
+Global: Material: Fe,Mn-N-C. Synthesis: Solvothermal + Pyrolysis. App: AOPs.
+Structure & Combine: Populate JSON.
+Output JSON:
+
+JSON
+
+{
+  "material_name": "Fe,Mn-N-C dual-metal catalyst",
+  "synthesis_type": "Solvothermal followed by Pyrolysis",
+  "target_application_hint": "Advanced Oxidation Processes (AOPs)",
+  "steps": [
+    {
+      "step_id": 1,
+      "step_name": "Precursor Dissolution and Mixing",
+      "chemicals": {
+        "precursors": [
+          {"name": "Glucose", "amount": "1.0 g", "concentration": "unknown", "role": "carbon_source"},
+          {"name": "Melamine", "amount": "0.5 g", "concentration": "unknown", "role": "nitrogen_source"},
+          {"name": "FeCl2·4H2O", "amount": "40 mg", "concentration": "unknown", "role": "metal_source (Fe)"},
+          {"name": "MnCl2·4H2O", "amount": "30 mg", "concentration": "unknown", "role": "metal_source (Mn)"}
+        ],
+        "solvent": [
+            {"name": "Ethanol", "volume": "50 mL (calculated)", "ratio": "1:1 v/v with water"},
+            {"name": "Water", "volume": "50 mL (calculated)", "ratio": "1:1 v/v with ethanol"}
+        ],
+        "other_reagents": []
+      },
+      "conditions": {
+        "temperature": {"value": "Room Temperature", "unit": "unknown", "duration": "30 min", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Ultrasonication", "speed": "unknown", "duration": "30 min"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Total solvent volume 100 mL."
+    },
+    {
+      "step_id": 2,
+      "step_name": "Solvothermal Reaction",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 160, "unit": "°C", "duration": "8 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Autogenous (sealed autoclave)", "flow_rate": "unknown", "pressure": "Autogenous"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Reaction in an autoclave."
+    },
+    {
+      "step_id": 3,
+      "step_name": "Intermediate Washing and Drying",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 70, "unit": "°C", "duration": "10 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (in oven, implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "Filtration", "conditions": "unknown"},
+        "washing": {
+            "solvents": [{"name": "Ethanol", "volume_or_ratio": "20 mL each time"}],
+            "times_or_cycles": "3 times"
+        },
+        "drying": {"method": "Oven (implied)", "temperature": "70 °C", "duration": "10 hours"}
+      },
+      "other_details": "Processing of the solid product from solvothermal step."
+    },
+    {
+      "step_id": 4,
+      "step_name": "Pyrolysis",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 850, "unit": "°C", "duration": "1.5 hours", "ramp_rate": "10 °C/min"},
+        "atmosphere": {"gas_type": "Argon", "flow_rate": "100 sccm", "pressure": "unknown"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Pyrolysis in a tube furnace."
+    },
+    {
+      "step_id": 5,
+      "step_name": "Ball Milling",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": "Room Temperature (implied)", "unit": "unknown", "duration": "4 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied unless specified)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Ball Milling", "speed": "unknown", "duration": "4 hours"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "To increase surface area."
+    }
+  ],
+  "final_product_yield": "unknown",
+  "metal_loading_intended_or_achieved": "unknown"
+}
+Example 4
+Input Text:
+"Pt single atoms on TiO2 (PtSA/TiO2) were synthesized via a wet impregnation method for photocatalytic hydrogen evolution. Commercial TiO2 (P25, 500 mg) was added to 50 mL of an aqueous solution containing 5 mg of H2PtCl6·6H2O. The suspension was stirred at 400 rpm for 24 hours at 25 °C to ensure Pt precursor adsorption. Subsequently, the solvent was removed by rotary evaporation at 60 °C under vacuum. The obtained solid was then calcined in a muffle furnace at 400 °C for 3 hours in air (heating rate 2 °C/min). After cooling, the PtSA/TiO2 catalyst was obtained. The target Pt loading was 0.5 wt%."
+
+Reasoning Steps:
+
+Goal: Synthesize PtSA/TiO2 via wet impregnation and calcination for photocatalytic H2 evolution.
+Steps: (1) Wet Impregnation/Adsorption -> (2) Solvent Removal -> (3) Calcination.
+Params (Step 1): Chemicals: TiO2 (P25, 500mg, support), H2PtCl6·6H2O (5mg, Pt source). Solvent: Aqueous solution (water, 50mL). Ops: Stirring (400rpm, 24h). Cond: 25°C.
+Params (Step 2): Ops: Rotary evaporation. Cond: 60°C, vacuum.
+Params (Step 3): Ops: Calcination in muffle furnace. Cond: 400°C, 3h, Air, ramp 2°C/min.
+Global: Material: PtSA/TiO2. Synthesis: Wet impregnation + Calcination. App: Photocatalytic H2 evolution. Target Pt loading: 0.5 wt%.
+Structure & Combine: Populate JSON.
+Output JSON:
+
+JSON
+
+{
+  "material_name": "Pt single atoms on TiO2 (PtSA/TiO2)",
+  "synthesis_type": "Wet Impregnation followed by Calcination",
+  "target_application_hint": "Photocatalytic hydrogen evolution",
+  "steps": [
+    {
+      "step_id": 1,
+      "step_name": "Wet Impregnation and Adsorption",
+      "chemicals": {
+        "precursors": [
+          {"name": "TiO2 (P25)", "amount": "500 mg", "concentration": "unknown", "role": "support_material"},
+          {"name": "H2PtCl6·6H2O", "amount": "5 mg", "concentration": "unknown", "role": "metal_source (Pt)"}
+        ],
+        "solvent": {"name": "Aqueous solution (Water)", "volume": "50 mL", "ratio": "unknown"},
+        "other_reagents": []
+      },
+      "conditions": {
+        "temperature": {"value": 25, "unit": "°C", "duration": "24 hours", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Air (implied)", "flow_rate": "unknown", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Stirring", "speed": "400 rpm", "duration": "24 hours"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "To ensure Pt precursor adsorption."
+    },
+    {
+      "step_id": 2,
+      "step_name": "Solvent Removal",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 60, "unit": "°C", "duration": "unknown (until dryness)", "ramp_rate": "unknown"},
+        "atmosphere": {"gas_type": "Vacuum", "flow_rate": "unknown", "pressure": "Reduced (rotary evaporator)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "Rotation (rotary evaporator)", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "Rotary evaporation", "conditions": "60 °C, vacuum"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "Rotary evaporation (implicit drying)", "temperature": "60 °C", "duration": "unknown (until dryness)"}
+      },
+      "other_details": "Solvent removed to obtain solid."
+    },
+    {
+      "step_id": 3,
+      "step_name": "Calcination",
+      "chemicals": { "precursors": [], "solvent": null, "other_reagents": [] },
+      "conditions": {
+        "temperature": {"value": 400, "unit": "°C", "duration": "3 hours", "ramp_rate": "2 °C/min"},
+        "atmosphere": {"gas_type": "Air", "flow_rate": "unknown (static air in muffle furnace)", "pressure": "Atmospheric (implied)"},
+        "ph": {"initial": "unknown", "adjusted_to": "unknown", "adjusting_agent": "unknown"}
+      },
+      "operations": {
+        "mixing": {"method": "unknown", "speed": "unknown", "duration": "unknown"},
+        "aging": {"duration": "unknown", "temperature": "unknown"},
+        "separation": {"method": "unknown", "conditions": "unknown"},
+        "washing": {"solvents": [], "times_or_cycles": "unknown"},
+        "drying": {"method": "unknown", "temperature": "unknown", "duration": "unknown"}
+      },
+      "other_details": "Calcination in a muffle furnace. Catalyst obtained after cooling."
+    }
+  ],
+  "final_product_yield": "unknown",
+  "metal_loading_intended_or_achieved": "Target: 0.5 wt% Pt"
+}
